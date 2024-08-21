@@ -1,41 +1,4 @@
-import Database from "../Database/index.js";
 import * as dao from "./dao.js";
-
-/*
-export default function CourseRoutes(app) {
-    app.get("/api/courses/:id", (req, res) => {
-      const { id } = req.params;
-      const course = Database.courses.find((c) => c._id === id);
-      if (!course) {
-        res.status(404).send("Course not found");
-        return;
-      }
-      res.send(course);
-    });
-    app.put("/api/courses/:id", (req, res) => {
-      const { id } = req.params;
-      const course = req.body;
-      Database.courses = Database.courses.map((c) =>
-        c._id === id ? { ...c, ...course } : c
-      );
-      res.sendStatus(204);
-    });
-    app.delete("/api/courses/:id", (req, res) => {
-      const { id } = req.params;
-      Database.courses = Database.courses.filter((c) => c._id !== id);
-      res.sendStatus(204);
-    });
-    app.post("/api/courses", (req, res) => {
-        const course = { ...req.body, _id: new Date().getTime().toString() };
-        Database.courses.push(course);
-        res.send(course);
-    });
-    app.get("/api/courses", (req, res) => {
-        const courses = Database.courses;
-        res.send(courses);
-    });
-}
-*/
 
 export default function CourseRoutes(app) {
   const createCourse = async (req, res) => {
@@ -46,36 +9,51 @@ export default function CourseRoutes(app) {
       const newCourse = await dao.createCourse(req.body);
       res.json(newCourse);
     }
-  }
+  };
 
   const findAllCourses = async (req, res) => {
     const courses = await dao.findAllCourses();
     console.log(courses);
     res.json(courses);
-  }
+  };
 
   const findCourseById = async (req, res) => {
     const { cid } = req.params;
-    const course = await dao.findCourseById(cid);
-    if (!course) {
-      res.status(404).send("Course not found");
-      return;
+    try {
+      const course = await dao.findCourseById(cid);
+      if (!course) {
+        res.status(404).send("Course not found");
+        return;
+      }
+      res.json(course);
+    } catch (error) {
+      console.error("Error fetching course by ID:", error);
+      res.status(500).send("Server error");
     }
-    res.json(course);
-  }
+  };
 
   const updateCourse = async (req, res) => {
     const { cid } = req.params;
     const course = req.body;
-    const status = await dao.updateCourse(cid, course);
-    res.sendStatus(204);
-  }
+    try {
+      await dao.updateCourse(cid, course);
+      res.sendStatus(204);
+    } catch (error) {
+      console.error("Error updating course:", error);
+      res.status(500).send("Server error");
+    }
+  };
 
   const deleteCourse = async (req, res) => {
     const { cid } = req.params;
-    const status = await dao.deleteCourse(cid);
-    res.sendStatus(204);
-  }
+    try {
+      await dao.deleteCourse(cid);
+      res.sendStatus(204);
+    } catch (error) {
+      console.error("Error deleting course:", error);
+      res.status(500).send("Server error");
+    }
+  };
 
   app.post("/api/courses", createCourse);
   app.get("/api/courses", findAllCourses);

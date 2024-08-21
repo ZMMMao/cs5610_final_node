@@ -12,8 +12,7 @@ import AssignmentRoutes from "./Kanbas/Assignments/routes.js";
 import QuizRoutes from "./Kanbas/Quizzes/routes.js";
 
 const CONNECTION_STRING = process.env.DB_CONNECTION_STRING || "mongodb://localhost:27017/kanbas";
-const DB_NAME = process.env.DB_NAME;
-mongoose.connect(CONNECTION_STRING, { dbName: DB_NAME });
+mongoose.connect(CONNECTION_STRING);
 console.log("Connecting to MongoDB at:", CONNECTION_STRING);
 
 const app = express();
@@ -22,14 +21,14 @@ app.use(
     // support cookies
     credentials: true,
     // restrict cross origin resource sharing to the react application
-    origin: process.env.FRONTEND_URL,
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
   }),
 );
 // make sure this statement occurs AFTER setting up CORS
 app.use(express.json());
 // configure server session after cors
 const sessionOptions = {
-  secret: process.env.SESSION_SECRET,
+  secret: "any string",
   resave: false,
   saveUninitialized: false,
 };
@@ -39,7 +38,6 @@ if (process.env.NODE_ENV !== "development") {
   sessionOptions.cookie = {
     sameSite: "none",
     secure: true,
-    // domain: "https://kanbas-quiz-node-server-smbz.onrender.com",
   };
 }
 app.use(session(sessionOptions));
@@ -52,4 +50,6 @@ QuizRoutes(app);
 AssignmentRoutes(app);
 Lab5(app);
 Hello(app);
-app.listen(process.env.PORT || 4000);
+app.listen(process.env.PORT || 4000, () => {
+  console.log(`Server is running on port ${process.env.PORT || 4000}`);
+});

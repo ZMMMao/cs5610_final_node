@@ -7,7 +7,9 @@ export const createCourse = (course) => {
 
 export const findAllCourses = () => model.find();
 
-export const findCourseById = (id) => model.findOne({ id: id });
+export const findCourseById = (id) => {
+    return model.findById(id);
+  };
 
 export const findCourseByNumber = (courseNumber) => 
     model.findOne({ number: courseNumber });
