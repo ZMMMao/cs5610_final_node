@@ -28,7 +28,7 @@ app.use(
 app.use(express.json());
 // configure server session after cors
 const sessionOptions = {
-  secret: "any string",
+  secret: process.env.SESSION_SECRET || "kanbas",
   resave: false,
   saveUninitialized: false,
 };
